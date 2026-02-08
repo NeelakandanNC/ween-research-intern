@@ -1,0 +1,6 @@
+export { default as authService } from './authService.js'
+export { default as professorService } from './professorService.js'
+export { default as studentService } from './studentService.js'
+export { default as internshipService } from './internshipService.js'
+export { default as applicationService } from './applicationService.js'
+export { default as bookmarkService } from './bookmarkService.js'

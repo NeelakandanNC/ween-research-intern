@@ -1,0 +1,32 @@
+{
+  "name": "ween",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Ween - Connecting students with professors for research opportunities",
+  "scripts": {
+    "dev": "npm run dev:server & npm run dev:client",
+    "dev:client": "cd client && npm run dev",
+    "dev:server": "cd server && npm run dev",
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "cd client && npm run build",
+    "build:server": "cd server && npm run build",
+    "lint": "npm run lint:client && npm run lint:server",
+    "lint:client": "cd client && npm run lint",
+    "lint:server": "cd server && npm run lint",
+    "db:migrate": "cd server && npx prisma migrate dev",
+    "db:push": "cd server && npx prisma db push",
+    "db:studio": "cd server && npx prisma studio",
+    "clean": "rm -rf client/node_modules server/node_modules client/dist"
+  },
+  "keywords": [
+    "research",
+    "internship",
+    "platform",
+    "education"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

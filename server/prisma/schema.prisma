@@ -1,0 +1,134 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role
+  createdAt DateTime @default(now())
+  
+  professor Professor?
+  student   Student?
+}
+
+enum Role {
+  professor
+  student
+}
+
+model Professor {
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  department    String   @default("")
+  researchAreas String[] @default([])
+  bio           String   @default("")
+  contactInfo   String   @default("")
+  createdAt     DateTime @default(now())
+  
+  internships   Internship[]
+
+  @@index([department])
+  @@index([createdAt])
+}
+
+model Student {
+  id           String    @id @default(uuid())
+  userId       String    @unique
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  major        String    @default("")
+  year         Year      @default(Freshman)
+  gpa          Float?
+  skills       String[]  @default([])
+  coursework   String[]  @default([])
+  experience   String    @default("")
+  interests    String[]  @default([])
+  resumeText   String?
+  cvData       String?   // Base64 encoded PDF (max 100KB)
+  cvFileName   String?
+  cvUploadedAt DateTime?
+  createdAt    DateTime  @default(now())
+  
+  applications Application[]
+  bookmarks    Bookmark[]
+}
+
+enum Year {
+  Freshman
+  Sophomore
+  Junior
+  Senior
+}
+
+model Internship {
+  id                 String   @id @default(uuid())
+  professorId        String
+  professor          Professor @relation(fields: [professorId], references: [id], onDelete: Cascade)
+  title              String
+  description        String
+  requiredSkills     String[] @default([])
+  duration           String
+  timeCommitment     String
+  researchArea       String
+  deadline           DateTime
+  positionsAvailable Int      @default(1)
+  status             Status   @default(active)
+  createdAt          DateTime @default(now())
+  
+  applications Application[]
+  bookmarks    Bookmark[]
+
+  @@index([professorId])
+  @@index([status])
+  @@index([researchArea])
+  @@index([createdAt])
+  @@index([deadline])
+}
+
+enum Status {
+  active
+  closed
+}
+
+model Application {
+  id             String            @id @default(uuid())
+  internshipId   String
+  internship     Internship        @relation(fields: [internshipId], references: [id], onDelete: Cascade)
+  studentId      String
+  student        Student           @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  status         ApplicationStatus @default(pending)
+  appliedAt      DateTime          @default(now())
+  respondedAt    DateTime?
+  professorNotes String?
+  
+  @@unique([internshipId, studentId])
+  @@index([internshipId])
+  @@index([studentId])
+  @@index([status])
+  @@index([appliedAt])
+}
+
+enum ApplicationStatus {
+  pending
+  accepted
+  rejected
+}
+
+model Bookmark {
+  id           String     @id @default(uuid())
+  studentId    String
+  student      Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  internshipId String
+  internship   Internship @relation(fields: [internshipId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+  
+  @@unique([studentId, internshipId])
+}
