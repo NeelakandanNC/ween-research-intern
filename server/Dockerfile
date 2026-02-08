@@ -1,4 +1,7 @@
-FROM node:20-alpine
+FROM node:20-slim
+
+# Install OpenSSL (required for Prisma)
+RUN apt-get update -y && apt-get install -y openssl wget && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -18,8 +21,8 @@ RUN npx prisma generate
 COPY . .
 
 # Create non-root user
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S expressjs -u 1001 && \
+RUN groupadd --gid 1001 nodejs && \
+    useradd --uid 1001 --gid nodejs --shell /bin/bash --create-home expressjs && \
     chown -R expressjs:nodejs /app
 
 USER expressjs
